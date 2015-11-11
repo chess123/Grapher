@@ -69,8 +69,8 @@ public class ParseExpression {
 				if (expr.charAt(i) == '(') num++;
 				if (expr.charAt(i) == ')') num--;
 				if (num == j) {
-					String expr1 = expr.substring(i.indexOf('(', i) + 1, nextParent(expr, i.indexOf('(', i) + 1)).trim();
-					switch (expr.substring(i, i.indexOf('(', i) {
+					String expr1 = expr.substring(expr.indexOf('(', i) + 1, nextParen(expr, expr.indexOf('(', i) + 1)).trim();
+					switch (expr.substring(i, expr.indexOf('(', i))) {
 						case "sin":
 							return Math.sin(parse(expr1, x));
 						case "cos":
@@ -90,7 +90,7 @@ public class ParseExpression {
 						case "abs":
 							return Math.abs(parse(expr1, x));
 						case "arcsin": case "asin":
-							return Math.asin(1 / parse(expr1, x));
+							return Math.asin(parse(expr1, x));
 						case "arccos": case "acos":
 							return Math.acos(parse(expr1, x));
 						case "arctan": case "atan":

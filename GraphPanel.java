@@ -82,7 +82,7 @@ public class GraphPanel extends JPanel implements ActionListener {
 			double y1 = ParseExpression.parse(function, xlow + (double)i / 2160.0 * (xhigh - xlow));
 			double y2 = ParseExpression.parse(function, xlow + (double)(i + 1) / 2160.0 * (xhigh - xlow));
 			// System.out.println(y1 + "\t" + y2);
-			if (y2 < 1000 * yhigh && y1 < 1000 * yhigh) g.drawLine(i, (int)(720 - (1440 / (yhigh - ylow)) * y1), i + 1, (int)(720 - (1440 / (yhigh - ylow)) * y2));
+			if (y2 < 1000 * yhigh && y1 < 1000 * yhigh) g.drawLine(i, (int)(1440 * (yhigh - y1) / (yhigh - ylow)), i + 1, (int)(1440 * (yhigh - y2) / (yhigh - ylow)));
 		}
 		int yofx = 1440 - (int)((-ylow) / (yhigh - ylow) * 1440);
 		int xofy = (int)((-xlow) / (xhigh - xlow) * 2160);
