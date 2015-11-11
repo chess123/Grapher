@@ -11,6 +11,9 @@ public class ParseExpression {
 		if (isNumber(expr)) return Double.parseDouble(expr);
 		if (expr.equals("pi")) return Math.PI;
 		if (expr.equals("e")) return Math.E;
+		if (expr.charAt(0) == '-') {
+			expr = expr.substring(0, 1) + "1 * " + expr.substring(1, expr.length());
+		}
 		int maxParen = numParens(expr);
 		int num;
 		for (int j = 0; j <= maxParen; j++) {
@@ -25,7 +28,7 @@ public class ParseExpression {
 				}
 			}
 			num = 0;
-			for (int i = 0; i < expr.length(); i++) {
+			for (int i = expr.length() - 1; i >= 0; i--) {
 				if (expr.charAt(i) == '(') num++;
 				if (expr.charAt(i) == ')') num--;
 				if (expr.charAt(i) == '-' && num == j && letterBefore(expr, i)) {

@@ -14,6 +14,7 @@ public class GraphPanel extends JPanel implements ActionListener {
 	private double xhigh;
 	private double ylow;
 	private double yhigh;
+	private JButton integral;
 	
 	public GraphPanel(String s) {
 		function = s;
@@ -29,33 +30,33 @@ public class GraphPanel extends JPanel implements ActionListener {
 		box.setFont(new Font("Arial", Font.BOLD, 50));
 		box.addActionListener(this);
 		xmin = new JTextField();
-		setLayout(null);
 		add(xmin);
 		xmin.setSize(80, 50);
 		xmin.setLocation(20, 50);
 		xmin.setFont(new Font("Arial", Font.BOLD, 50));
 		xmin.addActionListener(new ChangeScale());
 		xmax = new JTextField();
-		setLayout(null);
 		add(xmax);
 		xmax.setSize(80, 50);
 		xmax.setLocation(120, 50);
 		xmax.setFont(new Font("Arial", Font.BOLD, 50));
 		xmax.addActionListener(new ChangeScale());
 		ymin = new JTextField();
-		setLayout(null);
 		add(ymin);
 		ymin.setSize(80, 50);
 		ymin.setLocation(1920, 50);
 		ymin.setFont(new Font("Arial", Font.BOLD, 50));
 		ymin.addActionListener(new ChangeScale());
 		ymax = new JTextField();
-		setLayout(null);
 		add(ymax);
 		ymax.setSize(80, 50);
 		ymax.setLocation(2020, 50);
 		ymax.setFont(new Font("Arial", Font.BOLD, 50));
 		ymax.addActionListener(new ChangeScale());
+		// integral = new JButton("INTEGRAL");
+		// add(integral);
+		// integral.setSize(200, 50);
+		// integral.setLocation(1650, 50);
 	}
 
 	private class ChangeScale implements ActionListener {
