@@ -68,66 +68,101 @@ public class ParseExpression {
 			for (int i = 0; i < expr.length(); i++) {
 				if (expr.charAt(i) == '(') num++;
 				if (expr.charAt(i) == ')') num--;
-				if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("sin") && num == j) {
-					String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
-					return Math.sin(parse(expr1, x));
+				if (num == j) {
+					String expr1 = expr.substring(i.indexOf('(', i) + 1, nextParent(expr, i.indexOf('(', i) + 1)).trim();
+					switch (expr.substring(i, i.indexOf('(', i) {
+						case "sin":
+							return Math.sin(parse(expr1, x));
+						case "cos":
+							return Math.cos(parse(expr1, x));
+						case "tan":
+							return Math.tan(parse(expr1, x));
+						case "csc":
+							return 1 / Math.sin(parse(expr1, x));
+						case "sec":
+							return 1 / Math.cos(parse(expr1, x));
+						case "cot":
+							return 1 / Math.tan(parse(expr1, x));
+						case "ln":
+							return Math.log(parse(expr1, x));
+						case "sqrt":
+							return Math.sqrt(parse(expr1, x));
+						case "abs":
+							return Math.abs(parse(expr1, x));
+						case "arcsin": case "asin":
+							return Math.asin(1 / parse(expr1, x));
+						case "arccos": case "acos":
+							return Math.acos(parse(expr1, x));
+						case "arctan": case "atan":
+							return Math.atan(parse(expr1, x));
+						case "arccsc": case "acsc":
+							return Math.asin(1 / parse(expr1, x));
+						case "arcsec": case "asec":
+							return Math.acos(1 / parse(expr1, x));
+						case "arccot": case "acot":
+							return Math.atan(1 / parse(expr1, x));
+					}
 				}
-				if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("cos") && num == j) {
-					String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
-					return Math.cos(parse(expr1, x));
-				}
-				if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("tan") && num == j) {
-					String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
-					return Math.tan(parse(expr1, x));
-				}
-				if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("csc") && num == j) {
-					String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
-					return 1 / Math.sin(parse(expr1, x));
-				}
-				if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("sec") && num == j) {
-					String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
-					return 1 / Math.cos(parse(expr1, x));
-				}
-				if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("cot") && num == j) {
-					String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
-					return 1 / Math.tan(parse(expr1, x));
-				}
-				if (i + 2 < expr.length() && expr.substring(i, i + 2).equals("ln") && num == j) {
-					String expr1 = expr.substring(i + 3, nextParen(expr, i + 3)).trim();
-					return Math.log(parse(expr1, x));
-				}
-				if (i + 4 < expr.length() && expr.substring(i, i + 4).equals("sqrt") && num == j) {
-					String expr1 = expr.substring(i + 5, nextParen(expr, i + 5)).trim();
-					return Math.sqrt(parse(expr1, x));
-				}
-				if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("abs") && num == j) {
-					String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
-					return Math.abs(parse(expr1, x));
-				}
-				if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arcsin") && num == j) {
-					String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
-					return Math.asin(parse(expr1, x));
-				}
-				if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arccos") && num == j) {
-					String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
-					return Math.acos(parse(expr1, x));
-				}
-				if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arctan") && num == j) {
-					String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
-					return Math.atan(parse(expr1, x));
-				}
-				if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arccsc") && num == j) {
-					String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
-					return Math.asin(1 / parse(expr1, x));
-				}
-				if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arcsec") && num == j) {
-					String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
-					return Math.acos(1 / parse(expr1, x));
-				}
-				if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arccot") && num == j) {
-					String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
-					return Math.atan(1 / parse(expr1, x));
-				}
+				// if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("sin") && num == j) {
+				// 	String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
+				// 	return Math.sin(parse(expr1, x));
+				// }
+				// if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("cos") && num == j) {
+				// 	String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
+				// 	return Math.cos(parse(expr1, x));
+				// }
+				// if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("tan") && num == j) {
+				// 	String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
+				// 	return Math.tan(parse(expr1, x));
+				// }
+				// if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("csc") && num == j) {
+				// 	String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
+				// 	return 1 / Math.sin(parse(expr1, x));
+				// }
+				// if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("sec") && num == j) {
+				// 	String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
+				// 	return 1 / Math.cos(parse(expr1, x));
+				// }
+				// if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("cot") && num == j) {
+				// 	String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
+				// 	return 1 / Math.tan(parse(expr1, x));
+				// }
+				// if (i + 2 < expr.length() && expr.substring(i, i + 2).equals("ln") && num == j) {
+				// 	String expr1 = expr.substring(i + 3, nextParen(expr, i + 3)).trim();
+				// 	return Math.log(parse(expr1, x));
+				// }
+				// if (i + 4 < expr.length() && expr.substring(i, i + 4).equals("sqrt") && num == j) {
+				// 	String expr1 = expr.substring(i + 5, nextParen(expr, i + 5)).trim();
+				// 	return Math.sqrt(parse(expr1, x));
+				// }
+				// if (i + 3 < expr.length() && expr.substring(i, i + 3).equals("abs") && num == j) {
+				// 	String expr1 = expr.substring(i + 4, nextParen(expr, i + 4)).trim();
+				// 	return Math.abs(parse(expr1, x));
+				// }
+				// if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arcsin") && num == j) {
+				// 	String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
+				// 	return Math.asin(parse(expr1, x));
+				// }
+				// if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arccos") && num == j) {
+				// 	String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
+				// 	return Math.acos(parse(expr1, x));
+				// }
+				// if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arctan") && num == j) {
+				// 	String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
+				// 	return Math.atan(parse(expr1, x));
+				// }
+				// if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arccsc") && num == j) {
+				// 	String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
+				// 	return Math.asin(1 / parse(expr1, x));
+				// }
+				// if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arcsec") && num == j) {
+				// 	String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
+				// 	return Math.acos(1 / parse(expr1, x));
+				// }
+				// if (i + 6 < expr.length() && expr.substring(i, i + 6).equals("arccot") && num == j) {
+				// 	String expr1 = expr.substring(i + 7, nextParen(expr, i + 7)).trim();
+				// 	return Math.atan(1 / parse(expr1, x));
+				// }
 			}
 		}
 		return 9.9;
