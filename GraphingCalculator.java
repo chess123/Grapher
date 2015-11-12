@@ -9,7 +9,9 @@ public class GraphingCalculator extends JFrame {
 	public GraphingCalculator() {
 		super("Graphing Calculator");
 		getContentPane().add(new GraphPanel(func));
-		setSize(2160, 1440);
+		int width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+		int height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+		setSize(width, height);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 	}
