@@ -2,12 +2,12 @@ import java.io.PrintWriter;
 import java.awt.*;
 import javax.swing.*;
 
-public class IntegralCalculator extends JFrame {
+public class GraphingCalculator extends JFrame {
 
 	static String func;
 
-	public IntegralCalculator() {
-		super("Integral Calculator");
+	public GraphingCalculator() {
+		super("Graphing Calculator");
 		getContentPane().add(new GraphPanel(func));
 		setSize(2160, 1440);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -33,12 +33,12 @@ public class IntegralCalculator extends JFrame {
 		return d;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Throwable {
 		func = Prompt.getString("Enter a function f(x) = ");
 		// double start = Prompt.getDouble("Enter the lower limit of integration: ");
 		// double end = Prompt.getDouble("Enter the upper limit of integration: ");
 		// System.out.println("NINT(" + func + ", x, " + start + ", " + end + ") = " + integral(start, end, 1000000));
-		IntegralCalculator ic = new IntegralCalculator();
+		GraphingCalculator gc = new GraphingCalculator();
 	}
 
 	public static double derivative(double x) {

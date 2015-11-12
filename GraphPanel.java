@@ -27,31 +27,31 @@ public class GraphPanel extends JPanel implements ActionListener {
 		add(box);
 		box.setSize(1000, 50);
 		box.setLocation(580, 50);
-		box.setFont(new Font("Arial", Font.BOLD, 50));
+		box.setFont(new Font("Arial", Font.PLAIN, 50));
 		box.addActionListener(this);
 		xmin = new JTextField();
 		add(xmin);
 		xmin.setSize(80, 50);
 		xmin.setLocation(20, 50);
-		xmin.setFont(new Font("Arial", Font.BOLD, 50));
+		xmin.setFont(new Font("Arial", Font.PLAIN, 50));
 		xmin.addActionListener(new ChangeScale());
 		xmax = new JTextField();
 		add(xmax);
 		xmax.setSize(80, 50);
 		xmax.setLocation(120, 50);
-		xmax.setFont(new Font("Arial", Font.BOLD, 50));
+		xmax.setFont(new Font("Arial", Font.PLAIN, 50));
 		xmax.addActionListener(new ChangeScale());
 		ymin = new JTextField();
 		add(ymin);
 		ymin.setSize(80, 50);
 		ymin.setLocation(1920, 50);
-		ymin.setFont(new Font("Arial", Font.BOLD, 50));
+		ymin.setFont(new Font("Arial", Font.PLAIN, 50));
 		ymin.addActionListener(new ChangeScale());
 		ymax = new JTextField();
 		add(ymax);
 		ymax.setSize(80, 50);
 		ymax.setLocation(2020, 50);
-		ymax.setFont(new Font("Arial", Font.BOLD, 50));
+		ymax.setFont(new Font("Arial", Font.PLAIN, 50));
 		ymax.addActionListener(new ChangeScale());
 		// integral = new JButton("INTEGRAL");
 		// add(integral);
@@ -78,12 +78,19 @@ public class GraphPanel extends JPanel implements ActionListener {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		setBackground(Color.BLACK);
+		g.setColor(Color.DARK_GRAY);
+		for (double i = xlow; i <= xhigh; i += (xhigh - xlow) / 30) {
+			g.drawLine((int)((i - xlow) / (xhigh - xlow) * 2160), 0, (int)((i - xlow) / (xhigh - xlow) * 2160), 1440);
+		}
+		for (double i = ylow; i <= yhigh; i += (yhigh - ylow) / 20) {
+			g.drawLine(0, 1440 - (int)((i - ylow) / (yhigh - ylow) * 1440), 2160, 1440 - (int)((i - ylow) / (yhigh - ylow) * 1440));
+		}
 		g.setColor(Color.WHITE);
-		for (double i = 0; i < 2159; i += 0.1) {
+		for (double i = 0; i < 2159; i += 0.01) {
 			double y1 = ParseExpression.parse(function, xlow + (double)i / 2160.0 * (xhigh - xlow));
 			double y2 = ParseExpression.parse(function, xlow + (double)(i + 1) / 2160.0 * (xhigh - xlow));
 			// System.out.println(y1 + "\t" + y2);
-			if (y1 < yhigh && y1 > ylow && y2 < 1000 + yhigh && y2 > ylow - 1000) g.drawLine((int)i, (int)(1440 * (yhigh - y1) / (yhigh - ylow)), (int)(i + 1), (int)(1440 * (yhigh - y2) / (yhigh - ylow)));
+			if (y1 < yhigh && y1 > ylow && y2 < 1000 + yhigh && y2 > ylow - 1000) g.drawLine((int)Math.round(i), (int)Math.round(1440 * (yhigh - y1) / (yhigh - ylow)), (int)Math.round(i + 1), (int)Math.round(1440 * (yhigh - y2) / (yhigh - ylow)));
 		}
 		int yofx = 1440 - (int)((-ylow) / (yhigh - ylow) * 1440);
 		int xofy = (int)((-xlow) / (xhigh - xlow) * 2160);
@@ -93,10 +100,34 @@ public class GraphPanel extends JPanel implements ActionListener {
 		if (xlow < 0 && xhigh > 0) {
 			g.drawLine(xofy, 0, xofy, 1440);
 		}
+		g.setFont(new Font("Arial", Font.PLAIN, 24));
+		for (double i = xlow; i <= xhigh; i += (xhigh - xlow) / 30) {
+			g.drawLine((int)((i - xlow) / (xhigh - xlow) * 2160), yofx - 10, (int)((i - xlow) / (xhigh - xlow) * 2160), yofx + 10);
+			if (i != 0) g.drawString((int)i + "", (int)((i - xlow) / (xhigh - xlow) * 2160) - 10, yofx + 40);
+		}
+		for (double i = ylow; i <= yhigh; i += (yhigh - ylow) / 20) {
+			g.drawLine(xofy - 10, 1440 - (int)((i - ylow) / (yhigh - ylow) * 1440), xofy + 10, 1440 - (int)((i - ylow) / (yhigh - ylow) * 1440));
+			if (i != 0) g.drawString((int)i + "", xofy - 40, 1440 - (int)((i - ylow) / (yhigh - ylow) * 1440) + 10);
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		try {
+			ParseExpression.parse(box.getText(), 0);
+		} catch (Exception exc) {
+			box.setForeground(Color.RED);
+			Timer timer = new Timer(2000, new MakeRed());
+			timer.setRepeats(false);
+			timer.start();
+			return;
+		}
 		function = box.getText();
 		repaint();
+	}
+
+	private class MakeRed implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			box.setForeground(Color.BLACK);
+		}
 	}
 }

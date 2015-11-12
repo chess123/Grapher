@@ -6,7 +6,11 @@ public class ParseExpression {
 	}
 
 	public static double parse(String expr, double x) {
-		if (expr.charAt(0) == '(' && expr.charAt(expr.length() - 1) == ')') expr = expr.substring(1, expr.length() - 1);
+		if (expr.charAt(0) == '(' && expr.charAt(expr.length() - 1) == ')') {
+			if (matchesParen(expr))
+				expr = expr.substring(1, expr.length() - 1);
+			// System.out.println("HERE");
+		}
 		if (expr.equals("x")) return x;
 		if (isNumber(expr)) return Double.parseDouble(expr);
 		if (expr.equals("pi")) return Math.PI;
@@ -211,6 +215,18 @@ public class ParseExpression {
 		for (int k = i - 1; k >= 0; k--) {
 			if (expr.charAt(k) == ' ') continue;
 			return !((expr.charAt(k) < '0' || expr.charAt(k) > '9') && expr.charAt(k) != 'x' && expr.charAt(k) != ')');
+		}
+		return false;
+	}
+
+	public static boolean matchesParen(String expr) {
+		int cntParens = 1;
+		for (int i = 1; i < expr.length(); i++) {
+			if (expr.charAt(i) == '(') cntParens++;
+			if (expr.charAt(i) == ')') cntParens--;
+			if (cntParens == 0) {
+				return i == expr.length() - 1;
+			}
 		}
 		return false;
 	}
