@@ -120,6 +120,8 @@ public class ParseExpression {
 							return 1 / Math.cosh(parse(expr1, x));
 						case "coth":
 							return 1 / Math.tanh(parse(expr1, x));
+						case "floor":
+							return (int)(parse(expr1, x));
 					}
 				}
 			}

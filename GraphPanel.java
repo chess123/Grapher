@@ -2,7 +2,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class GraphPanel extends JPanel implements KeyListener {
+public class GraphPanel extends JPanel implements KeyListener, MouseMotionListener {
 
 	private String function;
 	private JTextField box;
@@ -10,6 +10,7 @@ public class GraphPanel extends JPanel implements KeyListener {
 	private JTextField xmax;
 	private JTextField ymin;
 	private JTextField ymax;
+	private JTextField resol;
 	private double xlow;
 	private double xhigh;
 	private double ylow;
@@ -18,64 +19,94 @@ public class GraphPanel extends JPanel implements KeyListener {
 	private JCheckBox derivative;
 	private boolean showDeriv;
 	private Timer timer;
-	
+	private int mouseX;
+	private double resolution;
+	private boolean first;
+	public static double width;
+	public static double height;
+
 	public GraphPanel(String s) {
+		mouseX = -100;
+		resolution = 1;
 		timer = new Timer(2000, new MakeRed());
 		timer.setRepeats(false);
 		showDeriv = true;
-		function = s;
 		xlow = -15;
 		xhigh = 15;
 		ylow = -10;
 		yhigh = 10;
-		box = new JTextField();
-		setLayout(null);
-		add(box);
-		box.setSize(1000, 50);
-		box.setLocation(580, 50);
-		box.setFont(new Font("Arial", Font.PLAIN, 50));
-		box.addKeyListener(this);
-		box.setText(function);
+		function = s;
+		first = true;
 		xmin = new JTextField();
-		add(xmin);
-		xmin.setSize(80, 50);
-		xmin.setLocation(20, 50);
-		xmin.setFont(new Font("Arial", Font.PLAIN, 50));
-		xmin.addActionListener(new ChangeScale());
-		xmin.setText((int)xlow + "");
-		xmax = new JTextField();
-		add(xmax);
-		xmax.setSize(80, 50);
-		xmax.setLocation(120, 50);
-		xmax.setFont(new Font("Arial", Font.PLAIN, 50));
-		xmax.addActionListener(new ChangeScale());
-		xmax.setText((int)xhigh + "");
-		ymin = new JTextField();
-		add(ymin);
-		ymin.setSize(80, 50);
-		ymin.setLocation(1920, 50);
-		ymin.setFont(new Font("Arial", Font.PLAIN, 50));
-		ymin.addActionListener(new ChangeScale());
-		ymin.setText((int)ylow + "");
+		resol = new JTextField();
 		ymax = new JTextField();
-		add(ymax);
-		ymax.setSize(80, 50);
-		ymax.setLocation(2020, 50);
-		ymax.setFont(new Font("Arial", Font.PLAIN, 50));
-		ymax.addActionListener(new ChangeScale());
-		ymax.setText((int)yhigh + "");
+		ymin = new JTextField();
+		box = new JTextField();
 		derivative = new JCheckBox("SHOW DERIVATIVE?", true);
+		xmax = new JTextField();
+		box.addKeyListener(this);
+		add(box);
+		add(xmin);
+		xmin.addActionListener(new ChangeScale());
+		setLayout(null);
+		add(ymax);
+		ymax.addActionListener(new ChangeScale());
+		add(resol);
+		add(ymin);
+		xmax.addActionListener(new ChangeScale());
+		add(xmax);
+		ymin.addActionListener(new ChangeScale());
+		resol.addActionListener(new ChangeResol());
+		derivative.addActionListener(new ToggleDeriv());
+		addMouseMotionListener(this);
 		add(derivative);
-		derivative.setLocation(240, 50);
-		derivative.setFont(new Font("Arial", Font.PLAIN, 24));
-		derivative.setSize(300, 50);
+	}
+	
+	public void initialize() {
+		// repaint();
+		// System.out.println(getWidth() + "\t" + getHeight());
+		width = getWidth();
+		height = getHeight();
+		box.setSize((int)(1000 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		box.setLocation((int)(580 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		box.setFont(new Font("Arial", Font.PLAIN, (int)(50 * getHeight() / 1384.0)));
+		box.setText(function);
+		xmin.setSize((int)(80 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		xmin.setLocation((int)(20 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		xmin.setFont(new Font("Arial", Font.PLAIN, (int)(50 * getHeight() / 1384.0)));
+		xmin.setText((int)xlow + "");
+		xmax.setSize((int)(80 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		xmax.setLocation((int)(120 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		xmax.setFont(new Font("Arial", Font.PLAIN, (int)(50 * getHeight() / 1384.0)));
+		xmax.setText((int)xhigh + "");
+		ymin.setSize((int)(80 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		ymin.setLocation((int)(1920 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		ymin.setFont(new Font("Arial", Font.PLAIN, (int)(50 * getHeight() / 1384.0)));
+		ymin.setText((int)ylow + "");
+		ymax.setSize((int)(80 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		ymax.setLocation((int)(2020 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		ymax.setFont(new Font("Arial", Font.PLAIN, (int)(50 * getHeight() / 1384.0)));
+		ymax.setText((int)yhigh + "");
+		resol.setSize((int)(80 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		resol.setLocation((int)(80 * getWidth() / 2138.0), (int)(350 * getHeight() / 1384.0));
+		resol.setFont(new Font("Arial", Font.PLAIN, (int)(50 * getHeight() / 1384.0)));
+		resol.setText(resolution + "");
+		derivative.setLocation((int)(240 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
+		derivative.setFont(new Font("Arial", Font.PLAIN, (int)(24 * getHeight() / 1384.0)));
+		derivative.setSize((int)(300 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
 		derivative.setBackground(Color.BLACK);
 		derivative.setForeground(Color.WHITE);
-		derivative.addActionListener(new ToggleDeriv());
 		// integral = new JButton("INTEGRAL");
 		// add(integral);
 		// integral.setSize(200, 50);
 		// integral.setLocation(1650, 50);
+	}
+
+	private class ChangeResol implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			resolution = Double.parseDouble(resol.getText());
+			repaint();
+		}
 	}
 
 	private class ToggleDeriv implements ActionListener {
@@ -103,6 +134,10 @@ public class GraphPanel extends JPanel implements KeyListener {
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		if (getWidth() != width || getHeight() != height) {
+			initialize();
+		}
+		// System.out.println(getWidth() + "\t" + getHeight());
 		setBackground(Color.BLACK);
 		g.setColor(Color.DARK_GRAY);
 		for (double i = xlow; i <= xhigh; i += (xhigh - xlow) / 30) {
@@ -115,12 +150,12 @@ public class GraphPanel extends JPanel implements KeyListener {
 		int yofx = getHeight() - (int)((-ylow) / (yhigh - ylow) * getHeight());
 		int xofy = (int)((-xlow) / (xhigh - xlow) * getWidth());
 		if (ylow < 0 && yhigh > 0) {
-			g.drawLine(0, yofx, getWidth(), yofx);
+			g.fillRect(0, yofx, getWidth(), 5);
 		}
 		if (xlow < 0 && xhigh > 0) {
-			g.drawLine(xofy, 0, xofy, getHeight());
+			g.fillRect(xofy, 0, 5, getHeight());
 		}
-		g.setFont(new Font("Arial", Font.PLAIN, 24));
+		g.setFont(new Font("Arial", Font.PLAIN, (int)(24 * getWidth() / 2138.0)));
 		for (double i = xlow; i <= xhigh; i += (xhigh - xlow) / 30) {
 			g.drawLine((int)((i - xlow) / (xhigh - xlow) * getWidth()), yofx - 10, (int)((i - xlow) / (xhigh - xlow) * getWidth()), yofx + 10);
 			if (Math.abs(i) > 0.0000001 && Math.abs(i % 1) <= 0.001) g.drawString((int)i + "", (int)((i - xlow) / (xhigh - xlow) * getWidth()) - 10, yofx + 40);
@@ -129,17 +164,34 @@ public class GraphPanel extends JPanel implements KeyListener {
 			g.drawLine(xofy - 10, getHeight() - (int)((i - ylow) / (yhigh - ylow) * getHeight()), xofy + 10, getHeight() - (int)((i - ylow) / (yhigh - ylow) * getHeight()));
 			if (Math.abs(i) > 0.0000001 && Math.abs(i % 1) <= 0.001) g.drawString((int)i + "", xofy - 40, getHeight() - (int)((i - ylow) / (yhigh - ylow) * getHeight()) + 10);
 		}
-		for (double i = 0; i < 2159; i += 0.01) {
+		for (double i = 0; i < getWidth(); i += resolution) {
 			g.setColor(Color.GREEN);
 			double y1 = ParseExpression.parse(function, xlow + (double)i / getWidth() * (xhigh - xlow));
-			double y2 = ParseExpression.parse(function, xlow + (double)(i + 1) / getWidth() * (xhigh - xlow));
-			if (y1 < yhigh && y1 > ylow && y2 < 1000 + yhigh && y2 > ylow - 1000) g.drawLine((int)Math.round(i), (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)), (int)Math.round(i + 1), (int)Math.round(getHeight() * (yhigh - y2) / (yhigh - ylow)));
+			double y2 = ParseExpression.parse(function, xlow + (double)(i + resolution) / getWidth() * (xhigh - xlow));
+			if (Double.isNaN(y1) || Double.isNaN(y2) || Double.isInfinite(y1) || Double.isInfinite(y2)) continue;
+			if (y1 < yhigh && y1 > ylow || y2 < yhigh && y2 > ylow) {
+				g.drawLine((int)Math.round(i), (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)), (int)Math.round(i + 1), (int)Math.round(getHeight() * (yhigh - y2) / (yhigh - ylow)));
+				if (i == mouseX) {
+					g.fillOval((int)Math.round(i) - 5, (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)) - 5, 10, 10);
+				}
+			}
 			if (showDeriv) {
 				g.setColor(Color.RED);
 				y1 = nDeriv(xlow + (double)i / getWidth() * (xhigh - xlow));
-				y2 = nDeriv(xlow + (double)(i + 1) / getWidth() * (xhigh - xlow));
-				if (y1 < yhigh && y1 > ylow && y2 < 1000 + yhigh && y2 > ylow - 1000) g.drawLine((int)Math.round(i), (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)), (int)Math.round(i + 1), (int)Math.round(getHeight() * (yhigh - y2) / (yhigh - ylow)));
+				y2 = nDeriv(xlow + (double)(i + resolution) / getWidth() * (xhigh - xlow));
+				if (y1 < yhigh && y1 > ylow || y2 < yhigh && y2 > ylow) {
+					g.drawLine((int)Math.round(i), (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)), (int)Math.round(i + 1), (int)Math.round(getHeight() * (yhigh - y2) / (yhigh - ylow)));
+					if (i == mouseX) {
+						g.fillOval((int)Math.round(i) - 5, (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)) - 5, 10, 10);
+					}
+				}
 			}
+		}
+		if (mouseX > 0) {
+			g.setColor(Color.GREEN);
+			g.drawString("(" + (xlow + (double)mouseX / getWidth() * (xhigh - xlow)) + "," + ParseExpression.parse(function, (xlow + (double)mouseX / getWidth() * (xhigh - xlow))) + ")", (int)(50 * getWidth() / 2138.0), (int)(200 * getHeight() / 1384.0));
+			g.setColor(Color.RED);
+			g.drawString("(" + (xlow + (double)mouseX / getWidth() * (xhigh - xlow)) + "," + nDeriv((xlow + (double)mouseX / getWidth() * (xhigh - xlow))) + ")", (int)(50 * getWidth() / 2138.0), (int)(280 * getHeight() / 1384.0));
 		}
 	}
 
@@ -169,6 +221,13 @@ public class GraphPanel extends JPanel implements KeyListener {
 	}
 	public void keyPressed(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
+
+	public void mouseMoved(MouseEvent e) {
+		if (resolution < 0.5) return;
+		mouseX = e.getX();
+		repaint();
+	}
+	public void mouseDragged(MouseEvent e) {}
 
 	private class MakeRed implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
