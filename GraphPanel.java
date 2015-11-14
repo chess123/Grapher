@@ -18,18 +18,17 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 	private JButton integral;
 	private JCheckBox derivative;
 	private boolean showDeriv;
-	private Timer timer;
 	private int mouseX;
 	private double resolution;
 	private boolean first;
 	public static double width;
 	public static double height;
+	private boolean validGraph;
 
 	public GraphPanel(String s) {
+		validGraph = true;
 		mouseX = -100;
 		resolution = 1;
-		timer = new Timer(2000, new MakeRed());
-		timer.setRepeats(false);
 		showDeriv = true;
 		xlow = -15;
 		xhigh = 15;
@@ -96,10 +95,6 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 		derivative.setSize((int)(300 * getWidth() / 2138.0), (int)(50 * getHeight() / 1384.0));
 		derivative.setBackground(Color.BLACK);
 		derivative.setForeground(Color.WHITE);
-		// integral = new JButton("INTEGRAL");
-		// add(integral);
-		// integral.setSize(200, 50);
-		// integral.setLocation(1650, 50);
 	}
 
 	private class ChangeResol implements ActionListener {
@@ -133,11 +128,19 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 	}
 
 	public void paintComponent(Graphics g) {
+		try {
+			paintMonkeys(g);
+		} catch (Throwable e) {
+			if (e instanceof BadParensException)
+				validGraph = false;
+		}
+	}
+
+	public void paintMonkeys(Graphics g) throws Throwable {
 		super.paintComponent(g);
 		if (getWidth() != width || getHeight() != height) {
 			initialize();
 		}
-		// System.out.println(getWidth() + "\t" + getHeight());
 		setBackground(Color.BLACK);
 		g.setColor(Color.DARK_GRAY);
 		for (double i = xlow; i <= xhigh; i += (xhigh - xlow) / 30) {
@@ -164,30 +167,38 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 			g.drawLine(xofy - 10, getHeight() - (int)((i - ylow) / (yhigh - ylow) * getHeight()), xofy + 10, getHeight() - (int)((i - ylow) / (yhigh - ylow) * getHeight()));
 			if (Math.abs(i) > 0.0000001 && Math.abs(i % 1) <= 0.001) g.drawString((int)i + "", xofy - 40, getHeight() - (int)((i - ylow) / (yhigh - ylow) * getHeight()) + 10);
 		}
-		for (double i = 0; i < getWidth(); i += resolution) {
-			g.setColor(Color.GREEN);
-			double y1 = ParseExpression.parse(function, xlow + (double)i / getWidth() * (xhigh - xlow));
-			double y2 = ParseExpression.parse(function, xlow + (double)(i + resolution) / getWidth() * (xhigh - xlow));
-			if (Double.isNaN(y1) || Double.isNaN(y2) || Double.isInfinite(y1) || Double.isInfinite(y2)) continue;
-			if (y1 < yhigh && y1 > ylow || y2 < yhigh && y2 > ylow) {
-				g.drawLine((int)Math.round(i), (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)), (int)Math.round(i + 1), (int)Math.round(getHeight() * (yhigh - y2) / (yhigh - ylow)));
-				if (i == mouseX) {
-					g.fillOval((int)Math.round(i) - 5, (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)) - 5, 10, 10);
-				}
-			}
-			if (showDeriv) {
-				g.setColor(Color.RED);
-				y1 = nDeriv(xlow + (double)i / getWidth() * (xhigh - xlow));
-				y2 = nDeriv(xlow + (double)(i + resolution) / getWidth() * (xhigh - xlow));
+		if (validGraph) {
+			for (double i = 0; i < getWidth(); i += resolution) {
+				g.setColor(Color.GREEN);
+				double y1 = ParseExpression.parse(function, xlow + (double)i / getWidth() * (xhigh - xlow));
+				double y2 = ParseExpression.parse(function, xlow + (double)(i + resolution) / getWidth() * (xhigh - xlow));
+				if (Double.isNaN(y1) || Double.isNaN(y2) || Double.isInfinite(y1) || Double.isInfinite(y2)) continue;
 				if (y1 < yhigh && y1 > ylow || y2 < yhigh && y2 > ylow) {
 					g.drawLine((int)Math.round(i), (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)), (int)Math.round(i + 1), (int)Math.round(getHeight() * (yhigh - y2) / (yhigh - ylow)));
 					if (i == mouseX) {
 						g.fillOval((int)Math.round(i) - 5, (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)) - 5, 10, 10);
 					}
 				}
+				double y3 = ParseExpression.parse(function, xlow + (double)(i - resolution) / getWidth() * (xhigh - xlow));
+				if (y1 > y3 && y1 > y2 || y1 < y3 && y1 < y2) {
+					g.setColor(Color.BLUE);
+					g.fillOval((int)Math.round(i) - 5, (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)) - 5, 10, 10);
+				}
+				if (showDeriv) {
+					g.setColor(Color.RED);
+					y1 = nDeriv(xlow + (double)i / getWidth() * (xhigh - xlow));
+					y2 = nDeriv(xlow + (double)(i + resolution) / getWidth() * (xhigh - xlow));
+					y3 = nDeriv(xlow + (double)(i - resolution) / getWidth() * (xhigh - xlow));
+					if (y1 < yhigh && y1 > ylow || y2 < yhigh && y2 > ylow) {
+						g.drawLine((int)Math.round(i), (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)), (int)Math.round(i + 1), (int)Math.round(getHeight() * (yhigh - y2) / (yhigh - ylow)));
+						if (i == mouseX) {
+							g.fillOval((int)Math.round(i) - 5, (int)Math.round(getHeight() * (yhigh - y1) / (yhigh - ylow)) - 5, 10, 10);
+						}
+					}
+				}
 			}
 		}
-		if (mouseX > 0) {
+		if (mouseX > 0 && mouseX < getWidth()) {
 			g.setColor(Color.GREEN);
 			g.drawString("(" + (xlow + (double)mouseX / getWidth() * (xhigh - xlow)) + "," + ParseExpression.parse(function, (xlow + (double)mouseX / getWidth() * (xhigh - xlow))) + ")", (int)(50 * getWidth() / 2138.0), (int)(200 * getHeight() / 1384.0));
 			g.setColor(Color.RED);
@@ -195,7 +206,7 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 		}
 	}
 
-	private double nDeriv(double val) {
+	private double nDeriv(double val) throws Throwable {
 		return (ParseExpression.parse(function, val + 0.0000001) - ParseExpression.parse(function, val - 0.0000001)) / 0.0000002;
 	}
 
@@ -209,12 +220,13 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 		}
 		try {
 			ParseExpression.parse(box.getText(), 0);
-		} catch (Exception exc) {
+		} catch (Throwable exc) {
 			box.setForeground(Color.RED);
-			if (!timer.isRunning()) timer.start();
+			validGraph = false;
+			repaint();
 			return;
 		}
-		if (timer.isRunning()) timer.stop();
+		validGraph = true;
 		box.setForeground(Color.BLACK);
 		function = box.getText();
 		repaint();
@@ -228,10 +240,4 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 		repaint();
 	}
 	public void mouseDragged(MouseEvent e) {}
-
-	private class MakeRed implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			box.setForeground(Color.BLACK);
-		}
-	}
 }

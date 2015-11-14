@@ -1,14 +1,22 @@
 public class ParseExpression {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Throwable {
 		String expr = Prompt.getString("Enter an expression for f(x) -> ");
 		double val = Prompt.getDouble("Enter a value -> ");
 		System.out.println("f(" + val + ") = " + parse(expr, val));
 	}
 
-	public static double parse(String expr, double x) {
+	public static double parse(String expr, double x) throws Throwable {
+		if (!parensPair(expr)) {
+			Throwable up = new BadParensException();
+			throw up;
+		}
 		if (expr.charAt(0) == '(' && expr.charAt(expr.length() - 1) == ')') {
 			if (matchesParen(expr))
-				expr = expr.substring(1, expr.length() - 1);
+				try {
+					return parse(expr.substring(1, expr.length() - 1), x);
+				} catch (Exception up) {
+					throw up;
+				}
 			// System.out.println("HERE");
 		}
 		if (expr.equals("x")) return x;
@@ -76,7 +84,7 @@ public class ParseExpression {
 				if (expr.charAt(i) == '(') num++;
 				if (expr.charAt(i) == ')') num--;
 				if (num == j) {
-					String expr1 = expr.substring(expr.indexOf('(', i) + 1, nextParen(expr, expr.indexOf('(', i) + 1)).trim();
+					String expr1 = expr.substring(expr.indexOf('(', i) + 1, nextParen(expr, expr.indexOf('(', i))).trim();
 					switch (expr.substring(i, expr.indexOf('(', i))) {
 						case "sin":
 							return Math.sin(parse(expr1, x));
@@ -126,7 +134,7 @@ public class ParseExpression {
 				}
 			}
 		}
-		return 9.9;
+		return Double.NaN;
 	}
 
 	public static boolean isNumber(String s) {
@@ -183,5 +191,15 @@ public class ParseExpression {
 			}
 		}
 		return false;
+	}
+
+	public static boolean parensPair(String expr) {
+		int cntParens = 0;
+		for (int i = 0; i < expr.length(); i++) {
+			if (expr.charAt(i) == '(') cntParens++;
+			if (expr.charAt(i) == ')') cntParens--;
+			if (cntParens < 0) return false;
+		}
+		return (cntParens == 0);
 	}
 }
