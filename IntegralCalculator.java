@@ -17,6 +17,9 @@ public class IntegralCalculator {
 	}
 
 	public static double integral(double start, double end, double numRects) throws Throwable {
+		if (end < start) {
+			return -1 * integral(end, start, numRects);
+		}
 		double d = (integralLRAM(start, end, numRects) + integralRRAM(start, end, numRects)) / 2;
 		return d;
 	}
@@ -41,9 +44,21 @@ public class IntegralCalculator {
 		return n;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Throwable {
 		while (true) {
-			func = Prompt.getString("Enter a function");
+			func = Prompt.getString("\nEnter a function -> ");
+			try {
+				ParseExpression.parse(func, 0);
+			} catch (Throwable e) {
+				System.out.println("\nERROR: Invalid function");
+				continue;
+			}
+			break;
 		}
+		double start = Prompt.getDouble("\nEnter the lower limit -> ");
+		double end = Prompt.getDouble("\nEnter the upper limit -> ");
+		double area = integral(start, end, 100000);
+		area = Double.parseDouble(Double.toString(area).substring(0, 8));
+		System.out.println("\nThe integral from " + start + " to " + end + " of (" + func + ") dx is " + area + "\n");
 	}
 }
