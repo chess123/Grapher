@@ -4,6 +4,17 @@ import java.awt.event.*;
 
 public class GraphPanel extends JPanel implements KeyListener, MouseMotionListener {
 
+	private boolean showDeriv;
+	private boolean first;
+	private boolean validGraph;
+	private int mouseX;
+	private double xlow;
+	private double xhigh;
+	private double ylow;
+	private double yhigh;
+	private double resolution;
+	public static double width;
+	public static double height;
 	private String function;
 	private JTextField box;
 	private JTextField xmin;
@@ -11,19 +22,8 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 	private JTextField ymin;
 	private JTextField ymax;
 	private JTextField resol;
-	private double xlow;
-	private double xhigh;
-	private double ylow;
-	private double yhigh;
 	private JButton integral;
 	private JCheckBox derivative;
-	private boolean showDeriv;
-	private int mouseX;
-	private double resolution;
-	private boolean first;
-	public static double width;
-	public static double height;
-	private boolean validGraph;
 
 	public GraphPanel(String s) {
 		validGraph = true;
@@ -36,29 +36,29 @@ public class GraphPanel extends JPanel implements KeyListener, MouseMotionListen
 		yhigh = 10;
 		function = s;
 		first = true;
-		xmin = new JTextField();
-		resol = new JTextField();
-		ymax = new JTextField();
-		ymin = new JTextField();
 		box = new JTextField();
-		derivative = new JCheckBox("SHOW DERIVATIVE?", true);
+		xmin = new JTextField();
 		xmax = new JTextField();
-		box.addKeyListener(this);
+		ymin = new JTextField();
+		ymax = new JTextField();
+		resol = new JTextField();
+		derivative = new JCheckBox("SHOW DERIVATIVE?", true);
+		setLayout(null);
 		add(box);
 		add(xmin);
-		xmin.addActionListener(new ChangeScale());
-		setLayout(null);
-		add(ymax);
-		ymax.addActionListener(new ChangeScale());
-		add(resol);
-		add(ymin);
-		xmax.addActionListener(new ChangeScale());
 		add(xmax);
+		add(ymin);
+		add(ymax);
+		add(resol);
+		add(derivative);
+		xmin.addActionListener(new ChangeScale());
+		xmax.addActionListener(new ChangeScale());
 		ymin.addActionListener(new ChangeScale());
+		ymax.addActionListener(new ChangeScale());
 		resol.addActionListener(new ChangeResol());
 		derivative.addActionListener(new ToggleDeriv());
+		box.addKeyListener(this);
 		addMouseMotionListener(this);
-		add(derivative);
 	}
 	
 	public void initialize() {

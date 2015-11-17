@@ -2,14 +2,14 @@
 Class=IEXPRESS
 SEDVersion=3
 [Options]
-PackagePurpose=ExtractOnly
+PackagePurpose=InstallApp
 ShowInstallProgramWindow=0
 HideExtractAnimation=0
-UseLongFileName=1
+UseLongFileName=0
 InsideCompressed=0
 CAB_FixedSize=0
 CAB_ResvCodeSigning=0
-RebootMode=I
+RebootMode=N
 InstallPrompt=%InstallPrompt%
 DisplayLicense=%DisplayLicense%
 FinishMessage=%FinishMessage%
@@ -26,14 +26,18 @@ DisplayLicense=
 FinishMessage=
 TargetName=C:\Users\Kesav Viswanadha\Documents\GitHub\Grapher\Grapher.EXE
 FriendlyName=Grapher
-AppLaunched=
-PostInstallCmd=
+AppLaunched=RunGraph.bat
+PostInstallCmd=RunGraph.bat
 AdminQuietInstCmd=
 UserQuietInstCmd=
 FILE0="Grapher.jar"
-FILE1="RunGrapher.cab"
+FILE1="RunGraph.bat"
+FILE2="RunGraph.ini"
+FILE3="RunGrapher.cab"
 [SourceFiles]
 SourceFiles0=C:\Users\Kesav Viswanadha\Documents\GitHub\Grapher\
 [SourceFiles0]
 %FILE0%=
 %FILE1%=
+%FILE2%=
+%FILE3%=

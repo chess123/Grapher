@@ -37,11 +37,9 @@ public class IntegralCalculator {
 		return (d1 + d2) / 2;
 	}
 
-	public static double nthDerivative(double n, double times) throws Throwable {
-		for (double i = 0; i < times; i++) {
-			n = derivative(n, 0.000001);
-		}
-		return n;
+	public static double nthDerivative(double x, int times) throws Throwable {
+		if (times == 0) return ParseExpression.parse(func, x);
+		return (nthDerivative(x + 0.0001, times - 1) - nthDerivative(x - 0.0001, times - 1)) / 0.0002;
 	}
 
 	public static void main(String[] args) throws Throwable {
@@ -55,10 +53,14 @@ public class IntegralCalculator {
 			}
 			break;
 		}
-		double start = Prompt.getDouble("\nEnter the lower limit -> ");
-		double end = Prompt.getDouble("\nEnter the upper limit -> ");
-		double area = integral(start, end, 100000);
-		area = Double.parseDouble(Double.toString(area).substring(0, 8));
-		System.out.println("\nThe integral from " + start + " to " + end + " of (" + func + ") dx is " + area + "\n");
+		// double start = Prompt.getDouble("\nEnter the lower limit -> ");
+		// double end = Prompt.getDouble("\nEnter the upper limit -> ");
+		// double area = integral(start, end, 100000);
+		// if (Double.toString(area).length() > 8) area = Double.parseDouble(Double.toString(area).substring(0, 8));
+		// System.out.println("\nThe integral from " + start + " to " + end + " of (" + func + ") dx is " + area + "\n");
+		int n = Prompt.getInt("Enter the nth derivative that you would like: ");
+		double val = Prompt.getDouble("Enter the x-value at which you would like to find that derivative: ");
+		double dval = nthDerivative(val, n);
+		System.out.println("d^" + n + "/dx^" + n + " at " + val + " = " + dval);
 	}
 }
