@@ -84,6 +84,10 @@ public class ParseExpression {
 				if (expr.charAt(i) == '(') num++;
 				if (expr.charAt(i) == ')') num--;
 				if (num == j) {
+					if (nextParen(expr, expr.indexOf('(', i)) != expr.length() - 1) {
+						Throwable up = new Throwable();
+						throw up;
+					}
 					String expr1 = expr.substring(expr.indexOf('(', i) + 1, nextParen(expr, expr.indexOf('(', i))).trim();
 					switch (expr.substring(i, expr.indexOf('(', i))) {
 						case "sin":
@@ -130,6 +134,8 @@ public class ParseExpression {
 							return 1 / Math.tanh(parse(expr1, x));
 						case "floor":
 							return (int)(parse(expr1, x));
+						default:
+							throw new Throwable();
 					}
 				}
 			}
